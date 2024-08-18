@@ -9,8 +9,6 @@ use binread::BinRead;
 use binde::{BinaryDeserialize, LittleEndian};
 use thiserror::Error;
 
-const VERSION: u32 = 4205910959;
-
 // TODO
 pub type TypeIndex = u32;
 
@@ -590,7 +588,6 @@ macro_rules! metadata {
     ($($(#[$($attrss:tt)*])* $name:ident: $ty:ty,)*) => {
         #[derive(Debug, BinaryDeserialize)]
         struct Il2CppGlobalMetadataHeader {
-            version: u32,
             $(
                 $name: OffsetLen,
             )*
@@ -871,9 +868,6 @@ metadata! {
 pub enum MetadataDeserializeError {
     #[error("binary deserialization error")]
     Bin(#[from] std::io::Error),
-
-    #[error("il2cpp metadata header version check failed, found {0}")]
-    VersionCheck(u32),
 }
 
 pub fn deserialize(data: &[u8]) -> Result<GlobalMetadata, MetadataDeserializeError> {
