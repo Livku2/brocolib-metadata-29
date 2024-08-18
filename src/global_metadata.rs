@@ -9,7 +9,7 @@ use binread::BinRead;
 use binde::{BinaryDeserialize, LittleEndian};
 use thiserror::Error;
 
-const VERSION: u32 = 29;
+const VERSION: u32 = 4205910959;
 
 // TODO
 pub type TypeIndex = u32;
