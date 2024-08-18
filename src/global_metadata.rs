@@ -879,9 +879,5 @@ pub enum MetadataDeserializeError {
 pub fn deserialize(data: &[u8]) -> Result<GlobalMetadata, MetadataDeserializeError> {
     let header = Il2CppGlobalMetadataHeader::deserialize::<LittleEndian, _>(Cursor::new(data))?;
 
-    if header.version != VERSION {
-        return Err(MetadataDeserializeError::VersionCheck(header.version));
-    }
-
     GlobalMetadata::deserialize(data, header)
 }
