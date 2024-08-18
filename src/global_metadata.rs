@@ -9,7 +9,6 @@ use binread::BinRead;
 use binde::{BinaryDeserialize, LittleEndian};
 use thiserror::Error;
 
-const SANITY: u32 = 0xFAB11BAF;
 const VERSION: u32 = 31;
 
 // TODO
@@ -591,7 +590,6 @@ macro_rules! metadata {
     ($($(#[$($attrss:tt)*])* $name:ident: $ty:ty,)*) => {
         #[derive(Debug, BinaryDeserialize)]
         struct Il2CppGlobalMetadataHeader {
-            sanity: u32,
             version: u32,
             $(
                 $name: OffsetLen,
@@ -874,19 +872,12 @@ pub enum MetadataDeserializeError {
     #[error("binary deserialization error")]
     Bin(#[from] std::io::Error),
 
-    #[error("il2cpp metadata header sanity check failed")]
-    SanityCheck,
-
     #[error("il2cpp metadata header version check failed, found {0}")]
     VersionCheck(u32),
 }
 
 pub fn deserialize(data: &[u8]) -> Result<GlobalMetadata, MetadataDeserializeError> {
     let header = Il2CppGlobalMetadataHeader::deserialize::<LittleEndian, _>(Cursor::new(data))?;
-
-    if header.sanity != SANITY {
-        return Err(MetadataDeserializeError::SanityCheck);
-    }
 
     if header.version != VERSION {
         return Err(MetadataDeserializeError::VersionCheck(header.version));
